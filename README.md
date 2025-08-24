@@ -20,6 +20,13 @@ from vibesort import vibesort
 result = vibesort([5, 2, 8, 1, 9])
 print(result)  # [1, 2, 5, 8, 9]
 ```
+Alternatively you can use Ollama if it's installed.
+```python
+from vibesort import vibesort
+
+result = vibesort([5, 2, 8, 1, 9],'ollama')
+print(result)  # [1, 2, 5, 8, 9]
+```
 
 ## Test
 
@@ -30,7 +37,8 @@ pytest tests/
 ## Dependencies
 
 - openai
+- ollama
 - pydantic  
 - typing-extensions
 
-⚠️ Requires OpenAI API key. Experimental project - not for production use.
+⚠️ Requires OpenAI API key or Ollama. Experimental project - not for production use.
