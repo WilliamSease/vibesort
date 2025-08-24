@@ -4,8 +4,8 @@ import openai
 from pydantic import BaseModel
 from typing import TypeVar
 import ollama
-import re
-import ast
+import json
+
 
 
 class VibesortResponse(BaseModel):
@@ -64,11 +64,11 @@ def structured_output(
 
 def structured_output_local(content: str,
     response_format: T,
-    model: str = "gpt-oss:20b",
+    model: str = "qwen2.5-coder:latest", #gpt-oss:20b wasn't honoring response format
 ) -> T:
     content = ollama.chat(
     model=model,
     messages=[{"role": "user", "content": content}],
     stream=False,
-    format=response_format.model_json_schema()).content
-    return content
+    format=response_format.model_json_schema()).message.content
+    return json.loads(content)['sorted_array']
