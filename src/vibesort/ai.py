@@ -3,6 +3,9 @@ from typing_extensions import Literal
 import openai
 from pydantic import BaseModel
 from typing import TypeVar
+import ollama
+import re
+import ast
 
 
 class VibesortResponse(BaseModel):
@@ -13,12 +16,20 @@ class VibesortRequest(BaseModel):
     array: list[int]
     order: Literal["asc", "desc"] = "asc"
 
+Provider = Literal["openAI","ollama"]
 
-def vibesort(array: list[int]) -> VibesortResponse:
-    return structured_output(
-        content=VibesortRequest(array=array).model_dump_json(),
-        response_format=VibesortResponse,
-    ).sorted_array
+
+def vibesort(array: list[int], mode:Provider = 'openAI') -> VibesortResponse:
+    if mode is 'openAI':
+        return structured_output(
+            content=VibesortRequest(array=array).model_dump_json(),
+            response_format=VibesortResponse,
+        ).sorted_array
+    if mode is 'ollama':
+        return structured_output_local(
+            content=VibesortRequest(array=array).model_dump_json(),
+            response_format=VibesortResponse
+        )
 
 
 T = TypeVar("T", bound=BaseModel)
@@ -49,3 +60,15 @@ def structured_output(
     )
     response_model = response.choices[0].message.parsed
     return response_model
+
+
+def structured_output_local(content: str,
+    response_format: T,
+    model: str = "gpt-oss:20b",
+) -> T:
+    content = ollama.chat(
+    model=model,
+    messages=[{"role": "user", "content": content}],
+    stream=False,
+    format=response_format.model_json_schema()).content
+    return content
