@@ -21,6 +21,7 @@ result = vibesort([5, 2, 8, 1, 9])
 print(result)  # [1, 2, 5, 8, 9]
 ```
 Alternatively you can use Ollama if it's installed.
+
 ```python
 from vibesort import vibesort
 
